@@ -35,7 +35,6 @@ It’s not a production PR (yet) — I ran into a local environment constraint (
    ```bash
    git clone https://github.com/pinkhairs/coolify-dashboard-ideas.git
    cd coolify-dashboard-ideas
-````
 
 2. **Open in VS Code**
 
@@ -76,7 +75,6 @@ It’s not a production PR (yet) — I ran into a local environment constraint (
 ---
 
 ## 📂 Structure
-
 ```
 coolify-dashboard-ideas/
 ├── index.html              # Main prototype
@@ -86,7 +84,6 @@ coolify-dashboard-ideas/
 ├── screenshot.png          # Preview image
 └── README.md               # This file
 ```
-
 ---
 
 ## ⚠️ Notes
