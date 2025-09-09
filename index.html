@@ -1,0 +1,1416 @@
+<!doctype html>
+<html class="min-h-full flex" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coolify Dashboard Ideas — Quick Prototype</title>
+  
+  <!-- Tailwind (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cool:{50:'oklch(0.98 0.003 260)',100:'oklch(0.96 0.004 260)',200:'oklch(0.92 0.006 260)',300:'oklch(0.86 0.009 260)',400:'oklch(0.70 0.014 260)',500:'oklch(0.55 0.018 260)',600:'oklch(0.45 0.020 260)',700:'oklch(0.37 0.018 260)',800:'oklch(0.28 0.014 260)',900:'oklch(0.20 0.010 260)',950:'oklch(0.13 0.008 260)'},
+          },
+          boxShadow:{ soft:'0 6px 20px rgba(0,0,0,0.06)' }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="h-full w-full min-h-full md:flex bg-gray-50 text-gray-800">
+  <!-- Scrims (hidden by default; JS toggles to block) -->
+  <!-- Transparent, clickable scrim (no Tailwind classes needed) -->
+  <div id="nav-scrim"
+  style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30"
+  aria-hidden="true"></div>
+  <div id="inbox-scrim" class="fixed inset-0 bg-black/20 hidden z-30" aria-hidden="true"></div>
+  
+  <header id="sidebar-left" class="md:overflow-hidden md:h-full bg-white pb-4 md:pb-3 w-full fixed z-20 md:w-60 border-b md:border-r md:border-r-gray-200 border-b-gray-200 md:border-b-transparent">
+    <div class="flex gap-2 items-center md:items-start justify-between py-2 px-4 md:py-4 md:pr-5">
+      <div class="flex items-center gap-5">
+        <div class="flex flex-col">
+          <a id="brand-link" class="font-extrabold text-xl" href="#">Coolify</a>
+          <span class="text-gray-600 text-xs">v4.0.0-beta.426</span>
+        </div>
+      </div>
+      <div class="flex gap-4 items-center mt-2">
+        <button id="btn-mobile-inbox" type="button" aria-label="Open Inbox" class="md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded">
+          <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="inbox"></i>
+        </button>
+        <button id="btn-settings" type="button" aria-label="Open settings" class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded">
+          <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="settings"></i>
+        </button>
+        <button id="btn-hamburger" type="button" aria-label="Open navigation" class="md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded">
+          <i data-feather="menu"></i>
+        </button>
+      </div>
+    </div>
+    
+    <nav id="primary-nav" class="overflow-auto hidden md:block" aria-label="Primary">
+      <ul class="gap-1 mt-3 flex flex-col pb-4">
+        <li>
+          <a id="nav-inbox" href="#" data-nav="inbox" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded">
+            <i data-feather="inbox" class="size-4"></i>
+            <span class="flex gap-1">Inbox<span class="block size-1.5 relative top-1 rounded-full bg-red-500"></span></span>
+          </a>
+        </li>
+        <li class="px-4 mt-4 mb-2"><div class="text-gray-600 opacity-70 text-sm">Operations</div></li>
+        <li>
+          <a id="nav-dashboard" href="#" data-nav="dashboard" class="w-full py-1 hover:!bg-gray-100 bg-gray-100 text-purple-600 hover:bg-purple-700 transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded">
+            <i data-feather="home" class="size-4"></i><span>Dashboard</span>
+          </a>
+        </li>
+        <li><a id="nav-projects" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="layers" class="size-4"></i><span>Projects</span></a></li>
+        <li><a id="nav-servers" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="server" class="size-4"></i><span>Servers</span></a></li>
+        <li><a id="nav-sources" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="git-branch" class="size-4"></i><span>Sources</span></a></li>
+        <li><a id="nav-destinations" href="#" class="py-1 hover:bg-gray-100 w-full transition-transform px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="map" class="size-4"></i><span>Destinations</span></a></li>
+        <li><a id="nav-storage" href="#" class="py-1 hover:bg-gray-100 w-full transition-transform px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="database" class="size-4"></i><span>Storage</span></a></li>
+        <li class="px-4 mt-4 mb-2"><div class="text-gray-600 opacity-70 text-sm">Configuration</div></li>
+        <li><a id="nav-shared-vars" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="code" class="size-4"></i><span>Shared Variables</span></a></li>
+        <li><a id="nav-keys" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="key" class="size-4"></i><span>Keys</span></a></li>
+        <li><a id="nav-tags" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="tag" class="size-4"></i><span>Tags</span></a></li>
+        <li class="px-4 mt-4 mb-2"><div class="text-gray-600 opacity-70 text-sm">Utilities</div></li>
+        <li><a id="nav-terminal" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="terminal" class="size-4"></i><span>Terminal</span></a></li>
+        <li class="px-4 mt-4 mb-2"><div class="text-gray-600 opacity-70 text-sm">Contribute</div></li>
+        <li><a id="nav-sponsor" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="heart" class="text-red size-4"></i><span>Sponsor Us</span></a></li>
+        <li><a id="nav-feedback" href="#" class="py-1 hover:bg-gray-100 w-full transition-colors px-4 flex gap-2 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 hover:bg-purple-700 transition-colors/40 rounded"><i data-feather="help-circle" class="size-4"></i><span>Feedback</span></a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <!-- Activity feed overlay drawer (Tailwind-only transitions; starts hidden) -->
+  <aside
+  id="activity-feed"
+  aria-label="Activity feed"
+  data-state="hidden"
+  class="fixed z-10 hidden opacity-0 -translate-x-3 transition ease-in-out duration-200
+  top-14 inset-x-0 w-screen bg-white shadow-lg
+  md:top-0 md:left-60 md:right-auto md:w-80 md:max-w-xs md:bg-white md:shadow-lg
+  overflow-hidden md:h-full p-4 border-b border-b-gray-200 md:border-b-transparent md:border-r md:border-r-gray-200 flex flex-col gap-6"
+  >
+  <h2 class="font-extrabold text-xl">Activity Feed</h2>
+  <div class="flex-1 overflow-auto h-full mt-4 text-sm text-gray-700" role="feed" aria-live="polite">
+    <ul class="space-y-3">
+      
+      <li id="activity-amber-excess-3" class="activity-item flex flex-col gap-2 border-b border-gray-200 pb-2" data-activity="deploy-failed">
+        <div class="flex items-start gap-2">
+          <i data-feather="x" class="size-4 shrink-0 text-gray-500 mt-0.5"></i>
+          <span class="flex-1"><span class="font-medium">Amber Excess 3</span> — Deploy failed: Missing dependencies in package.json</span>
+          <time class="text-[11px] text-gray-400 shrink-0 ml-2" datetime="2025-09-08T16:00:00-07:00">2m</time>
+        </div>
+        <div class="pl-6">
+          <button class="mark-read text-[11px] underline underline-offset-2 text-gray-500 hover:text-gray-700 bg-transparent p-0" type="button">Mark as read</button>
+        </div>
+      </li>
+      
+      <li id="activity-banal-panda-4" class="activity-item flex flex-col gap-2 border-b border-gray-200 pb-2" data-activity="high-cpu">
+        <div class="flex items-start gap-2">
+          <i data-feather="alert-triangle" class="size-4 shrink-0 text-gray-500 mt-0.5"></i>
+          <span class="flex-1"><span class="font-medium">Banal Panda 4</span> — High CPU usage: Performance may be impacted</span>
+          <time class="text-[11px] text-gray-400 shrink-0 ml-2" datetime="2025-09-08T15:57:00-07:00">5m</time>
+        </div>
+        <div class="pl-6">
+          <button class="mark-read text-[11px] underline underline-offset-2 text-gray-500 hover:text-gray-700 bg-transparent p-0" type="button">Mark as read</button>
+        </div>
+      </li>
+      
+      <li id="activity-preppy-koala-5" class="activity-item flex flex-col gap-2 border-b border-gray-200 pb-2" data-activity="deploying">
+        <div class="flex items-start gap-2">
+          <i data-feather="truck" class="size-4 shrink-0 text-gray-500 mt-0.5"></i>
+          <span class="flex-1"><span class="font-medium">Preppy Koala 5</span> — Deploying: Duration 00m 06s</span>
+          <time class="text-[11px] text-gray-400 shrink-0 ml-2" datetime="2025-09-08T15:57:00-07:00">5m</time>
+        </div>
+        <div class="pl-6">
+          <button class="mark-read text-[11px] underline underline-offset-2 text-gray-500 hover:text-gray-700 bg-transparent p-0" type="button">Mark as read</button>
+        </div>
+      </li>
+      
+      <li id="activity-squiggly-salamander-6" class="activity-item flex flex-col gap-2 border-b border-gray-200 pb-2" data-activity="healthy">
+        <div class="flex items-start gap-2">
+          <i data-feather="check" class="size-4 shrink-0 text-gray-500 mt-0.5"></i>
+          <span class="flex-1"><span class="font-medium">Squiggly Salamander 6</span> — Status: Healthy</span>
+          <time class="text-[11px] text-gray-400 shrink-0 ml-2" datetime="2025-09-08T15:54:00-07:00">8m</time>
+        </div>
+        <div class="pl-6">
+          <button class="mark-read text-[11px] underline underline-offset-2 text-gray-500 hover:text-gray-700 bg-transparent p-0" type="button">Mark as read</button>
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</aside>
+
+<main id="main" class="relative md:ml-60 z-0 pt-20 w-full md:pt-5 lg:pt-6 flex-1 p-4 pb-8 md:px-5 lg:px-6" aria-live="polite">
+  <div class="space-y-2">
+    <div class="inline-flex items-center gap-3">
+      <h1 id="page-title" class="font-extrabold text-3xl">Dashboard</h1>
+      <button class="bg-gray-100 border border-gray-300 rounded-md flex items-center justify-center gap-1" type="button">
+        <div class="flex text-sm items-center font-medium justify-center py-1 px-2"><i class="size-3.5" data-feather="plus"></i> Add</div>
+        <div class="border-l py-1 px-2 border-l-gray-300">
+          <i data-feather="chevron-down" class="size-3.5"></i>
+        </div>
+      </button>
+    </div>
+    <p class="text-gray-500">Your self-hosted infrastructure.</p>
+  </div>
+  
+  <div class="space-y-2 mt-8">
+    <h2 id="critical-alerts-title" class="font-bold text-2xl">Critical Alerts</h2>
+  </div>
+  
+  <div class="mt-4 grid lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-3">
+    <!-- Card 1 -->
+    <section id="card-amber-excess-3" class="card p-4 cursor-pointer w-full hover:shadow-md transition-all rounded-lg space-y-3 bg-white border border-gray-200" aria-labelledby="card-amber-excess-3-title">
+      <div class="flex mb-5 bg-red-100 text-red-800 font-medium py-2 px-3 text-xs rounded-md">Deploy failed: Missing dependencies in package.json</div>
+      <div class="flex relative items-center gap-3">
+        <div class="bg-red-100 size-12 text-red-800 rounded-full flex items-center justify-center"><i data-feather="x" class="size-8"></i></div>
+        <div class="space-y-1">
+          <h3 id="card-amber-excess-3-title" class="font-bold">Amber Excess 3</h3>
+          <p class="opacity-70 text-gray-600 text-xs">https://example.com</p>
+        </div>
+        <time class="text-xs absolute top-0 right-0 opacity-60" datetime="2025-09-08T16:00:00-07:00">2min ago</time>
+      </div>
+      <div class="grid pt-4 gap-1.5 grid-cols-3">
+        <a id="logs-amber-excess-3" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="clipboard" class="size-4"></i>Logs</a>
+        <button id="restart-amber-excess-3" type="button" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="refresh-ccw" class="size-4"></i>Restart</button>
+        <button id="deploy-amber-excess-3" type="button" class="font-bold text-sm text-center bg-purple-600 hover:bg-purple-700 transition-colors text-white justify-center flex items-center gap-1 px-4 rounded-md py-2"><i data-feather="play" class="size-4"></i>Deploy</button>
+      </div>
+      <button id="details-amber-excess-3" type="button" class="w-full text-center text-xs opacity-60 my-2 font-medium">Click to view details</button>
+      <!-- Details body (paste INSIDE #details-…-body) -->
+      <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+      
+    </section>
+    
+    <!-- Card 2 -->
+    <section id="card-banal-panda-4" class="card p-4 cursor-pointer w-full hover:shadow-md transition-all rounded-lg space-y-3 bg-white border border-gray-200" aria-labelledby="card-banal-panda-4-title">
+      <div class="flex mb-5 bg-yellow-100 text-red-800 font-medium py-2 px-3 text-xs rounded-md">High CPU usage: Performance may be impacted</div>
+      <div class="flex relative items-center gap-3">
+        <div class="relative bg-yellow-100 text-red-800 size-12 rounded-full flex items-center justify-center"><i data-feather="alert-triangle" class="size-7 relative -top-0.5"></i></div>
+        <div class="space-y-1">
+          <h3 id="card-banal-panda-4-title" class="font-bold">Banal Panda 4</h3>
+          <p class="opacity-70 text-gray-600 text-xs">https://example2.com</p>
+        </div>
+        <time class="text-xs absolute top-0 right-0 opacity-60" datetime="2025-09-08T15:57:00-07:00">5min ago</time>
+      </div>
+      <div class="grid pt-4 gap-1.5 grid-cols-3">
+        <a id="logs-banal-panda-4" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="clipboard" class="size-4"></i>Logs</a>
+        <button id="restart-banal-panda-4" type="button" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="refresh-ccw" class="size-4"></i>Restart</button>
+        <button id="deploy-banal-panda-4" type="button" class="font-bold text-sm text-center bg-purple-600 hover:bg-purple-700 transition-colors text-white justify-center flex items-center gap-1 px-4 rounded-md py-2"><i data-feather="play" class="size-4"></i>Deploy</button>
+      </div>
+      <button id="details-banal-panda-4" type="button" class="w-full text-center text-xs opacity-60 my-2 font-medium">Click to view details</button>
+      <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+      
+    </section>
+  </div>
+  
+  <div class="space-y-2 mt-8">
+    <h2 id="recent-resources-title" class="font-bold text-2xl">Recent Resources</h2>
+  </div>
+  
+  <div class="mt-4 grid lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-3">
+    <!-- Resource card 1 -->
+    <section id="card-preppy-koala-5" class="card p-4 cursor-pointer w-full hover:shadow-md transition-all rounded-lg space-y-3 bg-white border border-gray-200" aria-labelledby="card-preppy-koala-5-title">
+      <div class="flex mb-5 bg-blue-100 text-blue-800 font-medium py-2 px-3 text-xs rounded-md">Deploying: Duration 00m 06s</div>
+      <div class="flex relative items-center gap-3">
+        <div class="relative bg-blue-100 text-blue-800 size-12 rounded-full flex items-center justify-center"><i data-feather="truck" class="size-6"></i></div>
+        <div class="space-y-1">
+          <h3 id="card-preppy-koala-5-title" class="font-bold">Preppy Koala 5</h3>
+          <p class="opacity-70 text-gray-600 text-xs">https://example2.com</p>
+        </div>
+        <time class="text-xs absolute top-0 right-0 opacity-60" datetime="2025-09-08T15:57:00-07:00">5min ago</time>
+      </div>
+      <div class="grid pt-4 gap-1.5 grid-cols-3">
+        <a id="logs-preppy-koala-5" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="clipboard" class="size-4"></i>Logs</a>
+        <button id="restart-preppy-koala-5" type="button" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="refresh-ccw" class="size-4"></i>Restart</button>
+        <button id="deploy-preppy-koala-5" type="button" class="font-bold text-sm text-center bg-purple-600 hover:bg-purple-700 transition-colors text-white justify-center flex items-center gap-1 px-4 rounded-md py-2"><i data-feather="play" class="size-4"></i>Deploy</button>
+      </div>
+      <button id="details-preppy-koala-5" type="button" class="w-full text-center text-xs opacity-60 my-2 font-medium">Click to view details</button>
+      <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+      
+    </section>
+    
+    <!-- Resource card 2 -->
+    <section id="card-squiggly-salamander-6" class="card p-4 cursor-pointer w-full hover:shadow-md transition-all rounded-lg space-y-3 bg-white border border-gray-200" aria-labelledby="card-squiggly-salamander-6-title">
+      <div class="flex mb-5 bg-green-100 text-green-800 font-medium py-2 px-3 text-xs rounded-md">Status: Healthy</div>
+      <div class="flex relative items-center gap-3">
+        <div class="relative bg-green-100 text-green-800 size-12 rounded-full flex items-center justify-center"><i data-feather="check" class="size-6"></i></div>
+        <div class="space-y-1">
+          <h3 id="card-squiggly-salamander-6-title" class="font-bold">Squiggly Salamander 6</h3>
+          <p class="opacity-70 text-gray-600 text-xs">https://example2.com</p>
+        </div>
+        <time class="text-xs absolute top-0 right-0 opacity-60" datetime="2025-09-08T15:57:00-07:00">5min ago</time>
+      </div>
+      <div class="grid pt-4 gap-1.5 grid-cols-3">
+        <a id="logs-squiggly-salamander-6" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="clipboard" class="size-4"></i>Logs</a>
+        <button id="restart-squiggly-salamander-6" type="button" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="refresh-ccw" class="size-4"></i>Restart</button>
+        <button id="deploy-squiggly-salamander-6" type="button" class="font-bold text-sm text-center bg-purple-600 hover:bg-purple-700 transition-colors text-white justify-center flex items-center gap-1 px-4 rounded-md py-2"><i data-feather="play" class="size-4"></i>Deploy</button>
+      </div>
+      <button id="details-squiggly-salamander-6" type="button" class="w-full text-center text-xs opacity-60 my-2 font-medium">Click to view details</button><div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+      
+    </section>
+    
+    <!-- Resource card 3 -->
+    <section id="card-cool-kangaroo-6" class="card p-4 cursor-pointer w-full hover:shadow-md transition-all rounded-lg space-y-3 bg-white border border-gray-200" aria-labelledby="card-cool-kangaroo-6-title">
+      <div class="flex mb-5 bg-yellow-100 text-red-800 font-medium py-2 px-3 text-xs rounded-md">Status: Unhealthy</div>
+      <div class="flex relative items-center gap-3">
+        <div class="relative bg-yellow-100 text-red-800 size-12 rounded-full flex items-center justify-center"><i data-feather="alert-triangle" class="size-6 -top-0.5 relative"></i></div>
+        <div class="space-y-1">
+          <h3 id="card-cool-kangaroo-6-title" class="font-bold">Cool Kangaroo 6</h3>
+          <p class="opacity-70 text-gray-600 text-xs">https://example2.com</p>
+        </div>
+        <time class="text-xs absolute top-0 right-0 opacity-60" datetime="2025-09-08T15:57:00-07:00">5min ago</time>
+      </div>
+      <div class="grid pt-4 gap-1.5 grid-cols-3">
+        <a id="logs-cool-kangaroo-6" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="clipboard" class="size-4"></i>Logs</a>
+        <button id="restart-cool-kangaroo-6" type="button" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="refresh-ccw" class="size-4"></i>Restart</button>
+        <button id="deploy-cool-kangaroo-6" type="button" class="font-bold text-sm text-center bg-purple-600 hover:bg-purple-700 transition-colors text-white justify-center flex items-center gap-1 px-4 rounded-md py-2"><i data-feather="play" class="size-4"></i>Deploy</button>
+      </div>
+      <button id="details-cool-kangaroo-6" type="button" class="w-full text-center text-xs opacity-60 my-2 font-medium">Click to view details</button><div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+      
+    </section>
+    
+    <!-- Resource card 4 -->
+    <section id="card-squiggly-salamander-7" class="card p-4 cursor-pointer w-full hover:shadow-md transition-all rounded-lg space-y-3 bg-white border border-gray-200" aria-labelledby="card-squiggly-salamander-7-title">
+      <div class="flex mb-5 bg-green-100 text-green-800 font-medium py-2 px-3 text-xs rounded-md">Status: Healthy</div>
+      <div class="flex relative items-center gap-3">
+        <div class="relative bg-green-100 text-green-800 size-12 rounded-full flex items-center justify-center"><i data-feather="check" class="size-6"></i></div>
+        <div class="space-y-1">
+          <h3 id="card-squiggly-salamander-7-title" class="font-bold">Squiggly Salamander 7</h3>
+          <p class="opacity-70 text-gray-600 text-xs">https://example2.com</p>
+        </div>
+        <time class="text-xs absolute top-0 right-0 opacity-60" datetime="2025-09-08T15:57:00-07:00">5min ago</time>
+      </div>
+      <div class="grid pt-4 gap-1.5 grid-cols-3">
+        <a id="logs-squiggly-salamander-7" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="clipboard" class="size-4"></i>Logs</a>
+        <button id="restart-squiggly-salamander-7" type="button" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2"><i data-feather="refresh-ccw" class="size-4"></i>Restart</button>
+        <button id="deploy-squiggly-salamander-7" type="button" class="font-bold text-sm text-center bg-purple-600 hover:bg-purple-700 transition-colors text-white justify-center flex items-center gap-1 px-4 rounded-md py-2"><i data-feather="play" class="size-4"></i>Deploy</button>
+      </div>
+      <button id="details-squiggly-salamander-7" type="button" class="w-full text-center text-xs opacity-60 my-2 font-medium">Click to view details</button><div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+      
+    </section>
+  </div>
+  
+  <div class="space-y-2 mt-8">
+    <h2 id="recent-projects-title" class="font-bold text-2xl">Projects</h2>
+  </div>
+  
+  <div class="mt-4 grid lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-3">
+    <!-- Project 1 -->
+    <section id="project-bopping-parakeet" class="project-card hover:shadow-md rounded-lg transition-all bg-white border border-gray-200">
+      <div>
+        <div class="p-4 cursor-pointer w-full flex items-center justify-between" aria-labelledby="project-bopping-parakeet-title">
+          <div class="space-y-1">
+            <h3 id="project-bopping-parakeet-title" class="font-bold">Bopping Parakeet</h3>
+            <button id="summary-bopping-parakeet" type="button" class="text-xs opacity-60 my-2 font-medium">Click to view summary</button>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="settings-bopping-parakeet" type="button" aria-label="Project settings" class="font-bold text-sm text-center justify-center hover:bg-gray-100 flex items-center gap-1 p-2 rounded-md">
+              <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="settings"></i>
+            </button>
+            <a id="resources-bopping-parakeet" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2">
+              <i data-feather="layout" class="size-4"></i>Resources
+            </a>
+          </div>
+        </div>
+        <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 px-4 pb-5 ease-in-out">
+          
+          
+          
+          <!-- Info blocks -->
+          <div class="grid gap-4 md:grid-cols-2">
+            <!-- Access Information -->
+            <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+              <div class="space-y-2">
+                <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                  coolify.io
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+                </a>
+                <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                  <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                  Healthy (120ms response)
+                </div>
+              </div>
+            </section>
+            
+            <!-- Deployment Info -->
+            <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+              <div class="space-y-1">
+                <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                  <i class="size-4" data-feather="github"></i>
+                  2 hours ago by John Doe
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+                </a>
+                <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                  feat: add user dashboard
+                </div>
+              </div>
+            </section>
+          </div>
+          
+          <!-- Resource Usage -->
+          <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+            <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              
+              <!-- CPU -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+                <div class="text-2xl font-extrabold mt-1">45%</div>
+                <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                  <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+                </div>
+              </div>
+              
+              <!-- Memory -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+                <div class="text-2xl font-extrabold mt-1">68%</div>
+                <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                  <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+                </div>
+              </div>
+              
+              <!-- Disk I/O -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+                <div class="text-2xl font-extrabold mt-1">32%</div>
+                <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                  <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+                </div>
+              </div>
+              
+              <!-- Network -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+                <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+                <div class="text-[12px] text-gray-500">throughput</div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Logs -->
+          <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+            <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+            <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+            </pre>
+          </section>
+          
+        </div>
+      </div>
+    </section>
+    
+    <!-- Project 2 -->
+    <section id="project-lately-octopus" class="project-card hover:shadow-md rounded-lg transition-all bg-white border border-gray-200">
+      <div>
+        <div class="p-4 cursor-pointer w-full flex items-center justify-between" aria-labelledby="project-lately-octopus-title">
+          <div class="space-y-1">
+            <h3 id="project-lately-octopus-title" class="font-bold">Lately Octopus</h3>
+            <button id="summary-lately-octopus" type="button" class="text-xs opacity-60 my-2 font-medium">Click to view summary</button>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="settings-lately-octopus" type="button" aria-label="Project settings" class="font-bold text-sm text-center justify-center hover:bg-gray-100 flex items-center gap-1 p-2 rounded-md">
+              <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="settings"></i>
+            </button>
+            <a id="resources-lately-octopus" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2">
+              <i data-feather="layout" class="size-4"></i>Resources
+            </a>
+          </div>
+        </div>
+        <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 px-4 pb-5 ease-in-out">
+          
+          
+          
+          <!-- Info blocks -->
+          <div class="grid gap-4 md:grid-cols-2">
+            <!-- Access Information -->
+            <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+              <div class="space-y-2">
+                <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                  coolify.io
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+                </a>
+                <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                  <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                  Healthy (120ms response)
+                </div>
+              </div>
+            </section>
+            
+            <!-- Deployment Info -->
+            <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+              <div class="space-y-1">
+                <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                  <i class="size-4" data-feather="github"></i>
+                  2 hours ago by John Doe
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+                </a>
+                <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                  feat: add user dashboard
+                </div>
+              </div>
+            </section>
+          </div>
+          
+          <!-- Resource Usage -->
+          <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+            <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              
+              <!-- CPU -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+                <div class="text-2xl font-extrabold mt-1">45%</div>
+                <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                  <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+                </div>
+              </div>
+              
+              <!-- Memory -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+                <div class="text-2xl font-extrabold mt-1">68%</div>
+                <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                  <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+                </div>
+              </div>
+              
+              <!-- Disk I/O -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+                <div class="text-2xl font-extrabold mt-1">32%</div>
+                <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                  <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+                </div>
+              </div>
+              
+              <!-- Network -->
+              <div class="rounded-lg border border-gray-200 bg-white p-4">
+                <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+                <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+                <div class="text-[12px] text-gray-500">throughput</div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Logs -->
+          <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+            <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+            <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+            </pre>
+          </section>
+          
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <div class="space-y-2 mt-8">
+    <h2 id="servers-title" class="font-bold text-2xl">Servers</h2>
+  </div>
+  
+  <div class="mt-4 grid lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-3">
+    <!-- Server 1 -->
+    <section id="server-player-mongoose" class="server-card hover:shadow-md rounded-lg transition-all bg-white border border-gray-200">
+      <div class="p-4 cursor-pointer w-full flex items-center justify-between" aria-labelledby="server-player-mongoose-title">
+        <div class="space-y-1">
+          <h3 id="server-player-mongoose-title" class="font-bold">Player Mongoose</h3>
+          <button id="summary-player-mongoose" type="button" class="text-xs opacity-60 my-2 font-medium">Click to view summary</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="settings-player-mongoose" type="button" aria-label="Server settings" class="font-bold text-sm text-center justify-center hover:bg-gray-100 flex items-center gap-1 p-2 rounded-md">
+            <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="settings"></i>
+          </button>
+          <a id="projects-player-mongoose" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2">
+            <i data-feather="layers" class="size-4"></i>Projects
+          </a>
+        </div>
+      </div>
+      <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 px-4 pb-5 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+    </section>
+    
+    <!-- Server 2 -->
+    <section id="server-genial-whale" class="server-card hover:shadow-md rounded-lg transition-all bg-white border border-gray-200">
+      <div class="p-4 cursor-pointer w-full flex items-center justify-between" aria-labelledby="server-genial-whale-title">
+        <div class="space-y-1">
+          <h3 id="server-genial-whale-title" class="font-bold">Genial Whale</h3>
+          <button id="summary-genial-whale" type="button" class="text-xs opacity-60 my-2 font-medium">Click to view summary</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="settings-genial-whale" type="button" aria-label="Server settings" class="font-bold text-sm text-center justify-center hover:bg-gray-100 flex items-center gap-1 p-2 rounded-md">
+            <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="settings"></i>
+          </button>
+          <a id="projects-genial-whale" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2">
+            <i data-feather="layers" class="size-4"></i>Projects
+          </a>
+        </div>
+      </div>
+      <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 px-4 pb-5 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+    </section>
+    
+    <!-- Server 3 -->
+    <section id="server-serious-iguana" class="server-card hover:shadow-md rounded-lg transition-all bg-white border border-gray-200">
+      <div class="p-4 cursor-pointer w-full flex items-center justify-between" aria-labelledby="server-serious-iguana-title">
+        <div class="space-y-1">
+          <h3 id="server-serious-iguana-title" class="font-bold">Serious Iguana</h3>
+          <button id="summary-serious-iguana" type="button" class="text-xs opacity-60 my-2 font-medium">Click to view summary</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="settings-serious-iguana" type="button" aria-label="Server settings" class="font-bold text-sm text-center justify-center hover:bg-gray-100 flex items-center gap-1 p-2 rounded-md">
+            <i class="size-5 opacity-60 transition-opacity hover:opacity-100" data-feather="settings"></i>
+          </button>
+          <a id="projects-serious-iguana" href="#" class="font-bold text-sm text-center justify-center bg-gray-100 flex hover:border-gray-300 hover:bg-gray-200 items-center gap-1 border border-gray-200 px-4 rounded-md py-2">
+            <i data-feather="layers" class="size-4"></i>Projects
+          </a>
+        </div>
+      </div>
+      <div class="details-body hidden mt-2 border-t border-t-gray-200 pt-5 space-y-5 transition-all duration-200 px-4 pb-5 ease-in-out">
+        
+        
+        
+        <!-- Info blocks -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <!-- Access Information -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Access Information</h4>
+            <div class="space-y-2">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                coolify.io
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                <span class="size-1.5 rounded-full bg-green-500 inline-block"></span>
+                Healthy (120ms response)
+              </div>
+            </div>
+          </section>
+          
+          <!-- Deployment Info -->
+          <section class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h4 class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase mb-3">Deployment Info</h4>
+            <div class="space-y-1">
+              <a href="#" class="inline-flex items-center gap-2 font-medium text-blue-800 hover:underline">
+                <i class="size-4" data-feather="github"></i>
+                2 hours ago by John Doe
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14"/></svg>
+              </a>
+              <div class="flex items-center gap-2 text-[13px] text-gray-600">
+                feat: add user dashboard
+              </div>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Resource Usage -->
+        <section class="rounded-xl border border-gray-200 p-4 md:p-5">
+          <h4 class="text-center text-gray-700 font-semibold mb-4">Resource Usage</h4>
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            
+            <!-- CPU -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">CPU Usage</div>
+              <div class="text-2xl font-extrabold mt-1">45%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div>
+              </div>
+            </div>
+            
+            <!-- Memory -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Memory</div>
+              <div class="text-2xl font-extrabold mt-1">68%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-yellow-500" style="width:68%"></div>
+              </div>
+            </div>
+            
+            <!-- Disk I/O -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Disk I/O</div>
+              <div class="text-2xl font-extrabold mt-1">32%</div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-200">
+                <div class="h-1.5 rounded-full bg-green-500" style="width:32%"></div>
+              </div>
+            </div>
+            
+            <!-- Network -->
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <div class="text-[11px] tracking-wide text-gray-500 font-semibold uppercase">Network</div>
+              <div class="text-2xl font-extrabold mt-1">28 MB/s</div>
+              <div class="text-[12px] text-gray-500">throughput</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Logs -->
+        <section class="rounded-xl bg-gray-900 text-gray-100 p-4 md:p-5 shadow-soft">
+          <h4 class="text-white/80 font-semibold mb-3">Recent Logs</h4>
+          <pre class="font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap">
+[14:23:15] Server started on port 3000
+[14:24:01] User authentication successful for user@example.com
+<span class="text-yellow-400">[14:24:15] WARN: Memory usage at 68% — monitoring closely</span>
+[14:25:32] Cache hit ratio: 94.2%
+[14:26:18] Database query executed in 45ms
+          </pre>
+        </section>
+        
+      </div>
+    </section>
+  </div>
+</main>
+<span class="hidden lg:col-span-2 xl:col-span-3"></span>
+<script>feather.replace();</script>
+<script type="module">
+  import { initMobileMenu } from './mobile-menu.js';
+  initMobileMenu();
+</script>
+<script type="module">
+  import { initExpandableCards } from './expandable-cards.js';
+  initExpandableCards({
+    accordion: true,
+  });
+</script>
+<script type="module">
+  import { initInboxFeed } from './inbox-feed.js';
+  initInboxFeed();
+</script>
+</body>
+</html>
